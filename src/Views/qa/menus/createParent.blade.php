@@ -38,12 +38,19 @@
         </div>
     </div>
 
-    <div class="form-group">
+<div class="form-group">
         {!! Form::label('icon', 'Icon (font-awesome)', ['class'=>'col-md-2 control-label']) !!}
         <div class="col-sm-10">
-            {!! Form::text('icon', old('icon','fa-database'), ['class'=>'form-control', 'placeholder'=> 'Font awesome']) !!}
+        {!! Form::select('icon',$icons, old('icon'), ['class' => 'form-control']) !!}
+
         </div>
     </div>
+  <!--   <div class="form-group">
+      {!! Form::label('icon', 'Icon (font-awesome)', ['class'=>'col-md-2 control-label']) !!}
+      <div class="col-sm-10">
+          {!! Form::text('icon', old('icon','fa-database'), ['class'=>'form-control', 'placeholder'=> 'Font awesome']) !!}
+      </div>
+  </div> -->
 
     <div class="form-group">
         <div class="col-md-12">

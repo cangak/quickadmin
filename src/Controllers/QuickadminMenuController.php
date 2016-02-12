@@ -14,17 +14,16 @@ use Laraveldaily\Quickadmin\Builders\RequestBuilder;
 use Laraveldaily\Quickadmin\Builders\ViewsBuilder;
 use Laraveldaily\Quickadmin\Cache\QuickCache;
 use Laraveldaily\Quickadmin\Fields\FieldsDescriber;
+use Laraveldaily\Quickadmin\Models\Icon;
 use Laraveldaily\Quickadmin\Models\Menu;
 
-class QuickadminMenuController extends Controller
-{
+class QuickadminMenuController extends Controller {
 
     /**
      * Quickadmin menu list page
      * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
-    {
+    public function index() {
         $menusList = Menu::with(['children'])
             ->where('menu_type', '!=', 0)
             ->where('parent_id', null)
@@ -40,8 +39,7 @@ class QuickadminMenuController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function rearrange(Request $request)
-    {
+    public function rearrange(Request $request) {
         $menusList = Menu::with(['children'])
             ->where('menu_type', '!=', 0)
             ->where('parent_id', null)
@@ -68,13 +66,13 @@ class QuickadminMenuController extends Controller
      * Show new menu creation page
      * @return \Illuminate\View\View
      */
-    public function createCrud()
-    {
+    public function createCrud() {
         $fieldTypes        = FieldsDescriber::types();
         $fieldValidation   = FieldsDescriber::validation();
         $defaultValuesCbox = FieldsDescriber::default_cbox();
         $menusSelect       = Menu::whereNotIn('menu_type', [2, 3])->lists('title', 'id');
         $roles             = Role::all();
+        $icons             = Icon::lists('icon', 'icon');
         $parentsSelect     = Menu::where('menu_type', 2)->lists('title', 'id')->prepend('-- no parent --', 'null');
         // Get columns for relationship
         $models = [];
@@ -89,7 +87,7 @@ class QuickadminMenuController extends Controller
         }
 
         return view("qa::menus.createCrud",
-            compact('fieldTypes', 'fieldValidation', 'defaultValuesCbox', 'menusSelect', 'models', 'parentsSelect',
+            compact('icons', 'fieldTypes', 'fieldValidation', 'defaultValuesCbox', 'menusSelect', 'models', 'parentsSelect',
                 'roles'));
     }
 
@@ -100,8 +98,7 @@ class QuickadminMenuController extends Controller
      *
      * @return $this|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function insertCrud(Request $request)
-    {
+    public function insertCrud(Request $request) {
         $validation = Validator::make($request->all(), [
             'name'  => 'required|unique:menus,name',
             'title' => 'required',
@@ -185,7 +182,7 @@ class QuickadminMenuController extends Controller
             'name'      => $request->name,
             'title'     => $request->title,
             'parent_id' => $request->parent_id != 0 ? $request->parent_id : null,
-            'roles'     => $rolesInsert
+            'roles'     => $rolesInsert,
         ]);
         // Create migrations
         $migrationBuilder = new MigrationBuilder();
@@ -216,11 +213,10 @@ class QuickadminMenuController extends Controller
      * Show create parent page
      * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function createParent()
-    {
+    public function createParent() {
         $roles = Role::all();
-
-        return view('qa::menus.createParent', compact('roles'));
+        $icons = Icon::lists('icon', 'icon');
+        return view('qa::menus.createParent', compact('icons', 'roles'));
     }
 
     /**
@@ -230,8 +226,7 @@ class QuickadminMenuController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function insertParent(Request $request)
-    {
+    public function insertParent(Request $request) {
         $validation = Validator::make($request->all(), [
             'title' => 'required',
         ]);
@@ -257,7 +252,7 @@ class QuickadminMenuController extends Controller
             'name'      => ucfirst(camel_case($request->title)),
             'title'     => $request->title,
             'parent_id' => null,
-            'roles'     => $rolesInsert
+            'roles'     => $rolesInsert,
         ]);
 
         return redirect()->route('menu');
@@ -267,12 +262,11 @@ class QuickadminMenuController extends Controller
      * Create custom controller page
      * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function createCustom()
-    {
+    public function createCustom() {
         $parentsSelect = Menu::where('menu_type', 2)->lists('title', 'id')->prepend('-- no parent --', 'null');
         $roles         = Role::all();
-
-        return view('qa::menus.createCustom', compact('parentsSelect', 'roles'));
+        $icons         = Icon::lists('icon', 'icon');
+        return view('qa::menus.createCustom', compact('icons', 'parentsSelect', 'roles'));
     }
 
     /**
@@ -282,11 +276,10 @@ class QuickadminMenuController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function insertCustom(Request $request)
-    {
+    public function insertCustom(Request $request) {
         $validation = Validator::make($request->all(), [
             'name'  => 'required|unique:menus,name',
-            'title' => 'required'
+            'title' => 'required',
         ]);
         if ($validation->fails()) {
             return redirect()->back()->withInput()->withErrors($validation);
@@ -318,23 +311,21 @@ class QuickadminMenuController extends Controller
             'name'      => $request->name,
             'title'     => $request->title,
             'parent_id' => $request->parent_id != 0 ? $request->parent_id : null,
-            'roles'     => $rolesInsert
+            'roles'     => $rolesInsert,
         ]);
 
         return redirect()->route('menu');
     }
 
-    public function edit($id)
-    {
+    public function edit($id) {
         $menu          = Menu::findOrFail($id);
         $parentsSelect = Menu::where('menu_type', 2)->lists('title', 'id')->prepend('-- no parent --', 'null');
         $roles         = Role::all();
-
-        return view('qa::menus.edit', compact('menu', 'parentsSelect', 'roles'));
+        $icons         = Icon::lists('icon', 'icon');
+        return view('qa::menus.edit', compact('icons', 'menu', 'parentsSelect', 'roles'));
     }
 
-    public function update(Request $request, $id)
-    {
+    public function update(Request $request, $id) {
         $roles       = Role::all();
         $rolesInsert = '';
         $first       = true;
@@ -348,7 +339,7 @@ class QuickadminMenuController extends Controller
             }
         }
         $requestArray = $request->all();
-        if ( ! isset($requestArray['parent_id'])) {
+        if (!isset($requestArray['parent_id'])) {
             $requestArray['parent_id'] = null;
         }
         $requestArray['roles'] = $rolesInsert;

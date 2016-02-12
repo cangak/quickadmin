@@ -13,7 +13,8 @@ To use Quickadmin with Laravel Laravel 5.1.11 use branch `0.4.x`
 3. Configure your .env file with correct database information
 4. Run `php artisan quickadmin:install` and fill the required information.
 5. Register middleware `'role'       => \Laraveldaily\Quickadmin\Middleware\HasPermissions::class,` in your `App\Http\Kernel.php` at `$routeMiddleware`
-6. Access QuickAdmin panel by visiting `http://yourdomain/admin`.
+6. php artisan db:seed
+7. Access QuickAdmin panel by visiting `http://yourdomain/admin`.
 
 ## More information and detailed description
 [http://laraveldaily.com/packages/quickadmin/](http://laraveldaily.com/packages/quickadmin/)

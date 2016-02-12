@@ -19,6 +19,8 @@
           type="text/css"/>
     <link rel="stylesheet"
           href="{{ url('quickadmin/css') }}/font-awesome.min.css"/>
+<link rel="stylesheet"
+          href="{{ url('quickadmin/css') }}/entypo/css/entypo.css"/>
     <link rel="stylesheet"
           href="{{ url('quickadmin/css') }}/bootstrap.min.css"/>
     <link rel="stylesheet"
